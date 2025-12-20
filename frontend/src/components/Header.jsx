@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import logo from '../assets/logo.png'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import user from '../assets/user.png'
 import { GoSearch } from "react-icons/go";
@@ -28,7 +27,7 @@ function Header() {
     <header className='fixed top-0 w-full h-16 bg-[#23272a] z-40 opacity-70'>
       <div className='containerr mx-auto px-2 flex  items-center h-full'>
         <Link to={"/"}>
-          <img src={logo} alt="logo" width={100} className='mix-blend-lighten' />
+          <img src="https://images.indianexpress.com/2024/01/Movie-Street-feat-2.jpg?w=640" alt="logo" width={150} className='mix-blend-lighten' />
         </Link>
 
         <nav className='hidden lg:flex items-center space-x-4 ml-4 text-xl font-bold'>
