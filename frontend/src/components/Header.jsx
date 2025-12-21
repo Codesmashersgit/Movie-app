@@ -1,70 +1,108 @@
-import React, { useEffect, useState } from 'react'
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
-import user from '../assets/user.png'
+
+import React, { useEffect, useState } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { GoSearch } from "react-icons/go";
-import { navigation } from "../constent/navigation"; 
+import user from "../assets/user.png";
+import { navigation } from "../constent/navigation";
 
 function Header() {
-  const location = useLocation()
-  const removeSpace = location?.search?.slice(3)?.split("%20")?.join(" ")
-  
-  
-  const [searchInput, setSearchInput] = useState(removeSpace)
-  const navigate = useNavigate()
- 
-    
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // ✅ Get search query safely
+  const query = new URLSearchParams(location.search).get("q") || "";
+
+  const [searchInput, setSearchInput] = useState(query);
+
+  // ✅ Debounced search (industry standard)
   useEffect(() => {
-    if(searchInput){
-      navigate(`/search?q=${searchInput}`)
-    }
-  }, [searchInput])
+    const timer = setTimeout(() => {
+      if (searchInput.trim()) {
+        navigate(`/search?q=${searchInput}`);
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [searchInput, navigate]);
 
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    if (searchInput.trim()) {
+      navigate(`/search?q=${searchInput}`);
+    }
+  };
 
-  }
   return (
-    <header className='fixed top-0 w-full h-16 bg-[#23272a] z-40 opacity-70'>
-      <div className='containerr mx-auto px-2 flex  items-center h-full'>
-        <Link to={"/"}>
-          <img src="https://images.indianexpress.com/2024/01/Movie-Street-feat-2.jpg?w=640" alt="logo" width={150} className='mix-blend-lighten' />
+    <header className="fixed top-0 w-full h-16 bg-[#23272a]/80 backdrop-blur-md z-50">
+      <div className="container mx-auto px-4 flex items-center h-full">
+
+        {/* LOGO */}
+        <Link to="/" className="flex-shrink-0">
+          <img
+            src="https://images.indianexpress.com/2024/01/Movie-Street-feat-2.jpg?w=640"
+            alt="Movie Logo"
+            
+            className="mix-blend-lighten p-2 w-[120px]"
+          />
         </Link>
 
-        <nav className='hidden lg:flex items-center space-x-4 ml-4 text-xl font-bold'>
-          {
-            navigation.map((nav, index) => {
-              return (
-                <div>
-                  <NavLink key={nav.lable} to={nav.href} className={({ isActive }) => 'px-2 hover:text-neutral-500 ${isActive && "text-neutral-100"}'}>
-                    {nav.lable}
-                  </NavLink>
-                </div>
-              )
-            })
-          }
+        {/* NAVIGATION */}
+        <nav className="hidden lg:flex items-center gap-6 ml-6 text-lg font-semibold">
+          {navigation.map((nav) => (
+            <NavLink
+              key={nav.label}
+              to={nav.href}
+              className={({ isActive }) =>
+                `transition ${
+                  isActive
+                    ? "text-white"
+                    : "text-gray-400 hover:text-white"
+                }`
+              }
+            >
+              {nav.label}
+            </NavLink>
+          ))}
         </nav>
 
-        <div className='ml-auto flex items-center gap-10 '>
-          <form className='flex items-center gap-2 ' onSubmit={handleSubmit}>
-            <input type="text" placeholder='search here....' className='bg-transparent px-4 py-1 outline-none border-none hidden lg:block' onChange={(e) => setSearchInput(e.target.value)}
+        {/* RIGHT SECTION */}
+        <div className="ml-auto flex items-center gap-6">
+
+          {/* SEARCH */}
+          <form
+            onSubmit={handleSubmit}
+            className="hidden lg:flex items-center bg-gray-800 px-3 py-1 rounded-full"
+          >
+            <input
+              type="text"
+              placeholder="Search movies..."
+              className="bg-transparent outline-none text-sm text-white w-96"
               value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
             />
-            <button className='text-2xl text-white'>
+            <button
+              type="submit"
+              className="text-xl text-gray-300 hover:text-white"
+            >
               <GoSearch />
             </button>
           </form>
 
-          <div className='w-8 h-8 rounded-full overflow-hidden mr-5 items-center cursor-pointer active:scale-50 transition-all'>
-            <img src={user} alt="user"
-              width='w-full h-full'
+          {/* USER */}
+          <Link
+            to="/login"
+            className="w-9 h-9 rounded-full overflow-hidden cursor-pointer active:scale-95 transition"
+          >
+            <img
+              src={user}
+              alt="User"
+              className="w-full h-full object-cover"
             />
-          </div>
+          </Link>
         </div>
       </div>
     </header>
-  )
+  );
 }
 
-export default Header
-
-
+export default Header;
