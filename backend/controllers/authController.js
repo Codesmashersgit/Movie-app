@@ -104,9 +104,10 @@ exports.getMe = async (req, res, next) => {
       }
     });
   } catch (error) {
-    next(error);
+    next(error); 
   }
 };
+
 
 exports.updateDetails = async (req, res, next) => {
   try {
@@ -158,3 +159,5 @@ exports.updatePassword = async (req, res, next) => {
     next(error);
   }
 };
+
+
