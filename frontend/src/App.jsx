@@ -6,7 +6,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setBannerData ,setImageURL } from "./store/Netflix";
-
+import AdminController from "./Pages/AdminController"
 
 
 
