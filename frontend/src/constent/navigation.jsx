@@ -1,34 +1,24 @@
+
 import { BiMoviePlay } from "react-icons/bi";
 import { MdTv } from "react-icons/md";
-import { IoHomeOutline } from "react-icons/io5";
-import { IoSearchOutline } from "react-icons/io5";
+import { IoHomeOutline, IoSearchOutline } from "react-icons/io5";
+
+// Helper to create navigation items with consistent keys and labels
+const createNavItem = (label, href, icon) => ({
+  label,
+  href,
+  icon
+});
+
+// Standard desktop navigation
 export const navigation = [
+  createNavItem('Movies', '/explore/movie', <BiMoviePlay />),
+  createNavItem('TV Shows', '/explore/tv', <MdTv />),
+];
 
-  {
-    lable: 'Movies',
-    href: '/movie',
-    icon: <BiMoviePlay />
-  },
-  {
-    lable: 'TV Shows',
-    href: '/tv',
-    icon: <MdTv />
-  },
-
-]
-
+// Mobile navigation adds a home and search link
 export const mobileNavigation = [
-  {
-    lable: "Home",
-    href: "/",
-    icon: <IoHomeOutline />
-  },
-  ...navigation,
-  {
-    lable: "Search",
-    href : "/search",
-    icon : <IoSearchOutline/>
-  }
-]
-
-
+  createNavItem("Home", "/", <IoHomeOutline />),
+  ...navigation,  // Adds Movies and TV Shows dynamically
+  createNavItem("Search", "/search", <IoSearchOutline />),
+];
