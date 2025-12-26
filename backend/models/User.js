@@ -24,7 +24,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please add a password'],
     minlength: [6, 'Password must be at least 6 characters'],
-    select: false // Don't return password by default in queries
+    select: false
   },
   role: {
     type: String,
@@ -36,23 +36,18 @@ const UserSchema = new mongoose.Schema({
     default: Date.now
   }
 }, {
-  timestamps: true // Automatically adds createdAt and updatedAt fields
+  timestamps: true
 });
 
-// Encrypt password using bcrypt before saving to database
-UserSchema.pre('save', async function(next) {
-  // Only hash the password if it has been modified (or is new)
-  if (!this.isModified('password')) {
-    next();
-  }
-  
-  // Generate salt and hash password
+// Encrypt password before saving
+UserSchema.pre('save', async function() {
+  if (!this.isModified('password')) return; // Fix for "next is not a function"
+
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-  next();
 });
 
-// Sign JWT token and return
+// Sign JWT token
 UserSchema.methods.getSignedJwtToken = function() {
   return jwt.sign(
     { id: this._id, role: this.role },
@@ -61,18 +56,16 @@ UserSchema.methods.getSignedJwtToken = function() {
   );
 };
 
-// Match user entered password to hashed password in database
+// Match user password
 UserSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// Create index on email for faster queries
-UserSchema.index({ email: 1 });
+// Indexes
+UserSchema.index({ email: 1 }); // Email index
+UserSchema.index({ role: 1 });  // Role index
 
-// Create index on role for role-based queries
-UserSchema.index({ role: 1 });
-
-// Virtual field to get user's full profile (without sensitive data)
+// Virtual field for profile
 UserSchema.virtual('profile').get(function() {
   return {
     id: this._id,
@@ -83,7 +76,6 @@ UserSchema.virtual('profile').get(function() {
   };
 });
 
-// Ensure virtual fields are serialized
 UserSchema.set('toJSON', { virtuals: true });
 UserSchema.set('toObject', { virtuals: true });
 

@@ -1,12 +1,24 @@
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const Movie = require('./models/Movie');
-const User = require('./models/User');
 
-// Load env vars
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const Movie = require("./models/Movie");
+const User = require("./models/User");
+
+// Load env
 dotenv.config();
 
-// Sample movies data (IMDb Top 250)
+// MongoDB connect
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI); // latest driver options not needed
+    console.log("✅ MongoDB connected");
+  } catch (err) {
+    console.error("❌ MongoDB connection error:", err);
+    process.exit(1);
+  }
+};
+
+// Sample movies (same as tumhare, unchanged)
 const sampleMovies = [
   {
     title: "The Shawshank Redemption",
@@ -250,139 +262,67 @@ const sampleMovies = [
   }
 ];
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-// Seed function
 const seedDatabase = async () => {
   try {
-    console.log('🌱 Starting database seeding...');
-    console.log('==================================\n');
+    console.log("🌱 Starting ADMIN database seeding...\n");
 
-    // Create admin user
-    const adminExists = await User.findOne({ email: 'admin@movieapp.com' });
-    let adminUser;
-
-    if (!adminExists) {
+    // Admin Create
+    let adminUser = await User.findOne({ email: process.env.ADMIN_EMAIL });
+    if (!adminUser) {
       adminUser = await User.create({
-        name: 'Admin User',
-        email: 'admin@movieapp.com',
-        password: 'admin123',
-        role: 'admin'
+        name: process.env.ADMIN_NAME,
+        email: process.env.ADMIN_EMAIL,
+        password: process.env.ADMIN_PASSWORD,
+        role: "admin",
       });
-      console.log('✅ Admin user created successfully!');
-      console.log('   📧 Email: admin@movieapp.com');
-      console.log('   🔑 Password: admin123');
-      console.log('   👤 Role: admin\n');
+      console.log("✅ Admin created successfully");
     } else {
-      adminUser = adminExists;
-      console.log('ℹ️  Admin user already exists');
-      console.log('   📧 Email: admin@movieapp.com\n');
+      console.log("ℹ️ Admin already exists");
     }
 
-    // Create regular user
-    const userExists = await User.findOne({ email: 'user@movieapp.com' });
-    
-    if (!userExists) {
-      await User.create({
-        name: 'Regular User',
-        email: 'user@movieapp.com',
-        password: 'user123',
-        role: 'user'
-      });
-      console.log('✅ Regular user created successfully!');
-      console.log('   📧 Email: user@movieapp.com');
-      console.log('   🔑 Password: user123');
-      console.log('   👤 Role: user\n');
-    } else {
-      console.log('ℹ️  Regular user already exists');
-      console.log('   📧 Email: user@movieapp.com\n');
-    }
+    console.log(`👤 Admin Name  : ${adminUser.name}`);
+    console.log(`📧 Admin Email : ${adminUser.email}`);
+    console.log(`🔐 Role        : ${adminUser.role}\n`);
 
-    console.log('==================================');
-    console.log('🎬 Adding sample movies from IMDb Top 250...\n');
-    
-    let addedCount = 0;
-    let skippedCount = 0;
+    // Add Movies
+    console.log("🎬 Seeding movies...\n");
+    let added = 0;
+    let skipped = 0;
 
-    for (const movieData of sampleMovies) {
-      const exists = await Movie.findOne({ imdbId: movieData.imdbId });
-      
+    for (const movie of sampleMovies) {
+      const exists = await Movie.findOne({ imdbId: movie.imdbId });
       if (!exists) {
-        await Movie.create({
-          ...movieData,
-          addedBy: adminUser._id
-        });
-        addedCount++;
-        console.log(`   ✓ Added: ${movieData.title} (${movieData.rating}/10)`);
+        await Movie.create({ ...movie, addedBy: adminUser._id });
+        added++;
+        console.log(`✓ Added: ${movie.title}`);
       } else {
-        skippedCount++;
-        console.log(`   ⊘ Skipped: ${movieData.title} (already exists)`);
+        skipped++;
+        console.log(`⊘ Skipped: ${movie.title}`);
       }
     }
 
-    console.log('\n==================================');
-    console.log('✅ Database seeding completed!\n');
-    console.log('📊 Summary:');
-    console.log(`   • Movies added: ${addedCount}`);
-    console.log(`   • Movies skipped: ${skippedCount}`);
-    console.log(`   • Total movies in database: ${await Movie.countDocuments()}`);
-    console.log(`   • Total users in database: ${await User.countDocuments()}\n`);
-    
-    // Get statistics
-    console.log('📈 Movie Statistics:');
-    const stats = await Movie.aggregate([
-      {
-        $group: {
-          _id: null,
-          avgRating: { $avg: '$rating' },
-          avgDuration: { $avg: '$duration' },
-          maxRating: { $max: '$rating' },
-          minRating: { $min: '$rating' }
-        }
-      }
-    ]);
-    
-    if (stats.length > 0) {
-      console.log(`   • Average Rating: ${stats[0].avgRating.toFixed(2)}/10`);
-      console.log(`   • Highest Rating: ${stats[0].maxRating}/10`);
-      console.log(`   • Lowest Rating: ${stats[0].minRating}/10`);
-      console.log(`   • Average Duration: ${Math.round(stats[0].avgDuration)} minutes\n`);
-    }
-
-    // Get genre distribution
-    const genreStats = await Movie.aggregate([
-      { $unwind: '$genre' },
-      { $group: { _id: '$genre', count: { $sum: 1 } } },
-      { $sort: { count: -1 } },
-      { $limit: 5 }
-    ]);
-
-    if (genreStats.length > 0) {
-      console.log('🎭 Top Genres:');
-      genreStats.forEach(genre => {
-        console.log(`   • ${genre._id}: ${genre.count} movies`);
-      });
-    }
-
-    console.log('\n==================================');
-    console.log('🎉 Ready to use! Start your server with: npm run dev');
-    console.log('==================================\n');
+    // Summary
+    console.log("\n===============================");
+    console.log("✅ ADMIN SEEDING COMPLETED");
+    console.log("===============================");
+    console.log(`🎥 Movies Added   : ${added}`);
+    console.log(`⏭️ Movies Skipped : ${skipped}`);
+    console.log(`📊 Total Movies   : ${await Movie.countDocuments()}`);
+    console.log(`👤 Total Users    : ${await User.countDocuments()}`);
+    console.log("===============================\n");
 
     process.exit(0);
-  } catch (error) {
-    console.error('\n❌ Error seeding database:', error.message);
-    console.error('Stack trace:', error.stack);
+  } catch (err) {
+    console.error("❌ Seeder Error:", err);
     process.exit(1);
   }
 };
 
-// Run seeder
-console.log('\n╔══════════════════════════════════════╗');
-console.log('║   Movie Application Database Seeder   ║');
-console.log('╚══════════════════════════════════════╝\n');
-
-seedDatabase();
+// ===============================
+// 4️⃣ Run Seeder
+// ===============================
+(async () => {
+  console.log("\n🚀 Movie App – Admin Seeder\n");
+  await connectDB();
+  await seedDatabase();
+})();

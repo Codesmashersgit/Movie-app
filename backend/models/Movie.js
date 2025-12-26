@@ -3,94 +3,67 @@ const mongoose = require('mongoose');
 const MovieSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: [true, 'Please add a movie title'],
+    required: true,
     trim: true,
-    maxlength: [200, 'Title cannot be more than 200 characters']
+    maxlength: 200
   },
   description: {
     type: String,
-    required: [true, 'Please add a description'],
-    maxlength: [2000, 'Description cannot be more than 2000 characters']
+    required: true,
+    maxlength: 2000
   },
   rating: {
     type: Number,
-    required: [true, 'Please add a rating'],
-    min: [0, 'Rating must be at least 0'],
-    max: [10, 'Rating cannot be more than 10']
+    required: true,
+    min: 0,
+    max: 10
   },
   releaseDate: {
     type: Date,
-    required: [true, 'Please add a release date']
+    required: true
   },
   duration: {
     type: Number,
-    required: [true, 'Please add duration in minutes'],
-    min: [1, 'Duration must be at least 1 minute']
+    required: true,
+    min: 1
   },
   genre: {
     type: [String],
-    required: [true, 'Please add at least one genre'],
-    validate: {
-      validator: function(v) {
-        return v && v.length > 0;
-      },
-      message: 'Please add at least one genre'
-    }
+    required: true
   },
   director: {
     type: String,
-    required: [true, 'Please add a director'],
-    trim: true,
-    maxlength: [100, 'Director name cannot be more than 100 characters']
+    required: true,
+    trim: true
   },
   cast: {
     type: [String],
-    required: [true, 'Please add at least one cast member'],
-    validate: {
-      validator: function(v) {
-        return v && v.length > 0;
-      },
-      message: 'Please add at least one cast member'
-    }
+    required: true
   },
   posterUrl: {
     type: String,
-    trim: true,
-    match: [
-      /^https?:\/\/.+/,
-      'Please add a valid URL'
-    ]
+    trim: true
   },
   imdbId: {
     type: String,
     trim: true,
     unique: true,
-    sparse: true,
-    match: [
-      /^tt\d{7,8}$/,
-      'Please add a valid IMDb ID (e.g., tt0111161)'
-    ]
+    sparse: true
   },
   addedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
   }
-}, {
-  timestamps: true
-});
+}, { timestamps: true });
 
+// indexes
 MovieSchema.index({ title: 1 });
 MovieSchema.index({ rating: -1 });
 MovieSchema.index({ releaseDate: -1 });
 MovieSchema.index({ duration: 1 });
-MovieSchema.index({ imdbId: 1 });
 
-MovieSchema.index({ 
-  title: 'text', 
+MovieSchema.index({
+  title: 'text',
   description: 'text',
   director: 'text',
   cast: 'text'

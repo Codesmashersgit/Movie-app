@@ -17,3 +17,5 @@ router.put('/updatedetails', protect, updateDetails);
 router.put('/updatepassword', protect, updatePassword);
 
 module.exports = router;
+
+
