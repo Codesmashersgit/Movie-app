@@ -9,7 +9,7 @@ import SearchPage from "../Pages/SearchPage";
 import Login from "../Pages/LoginPage";
 import Register from "../Pages/RegisterPage";
 import AdminController from "../Pages/AdminController"
-import AdminRoute from "./adminRoute";
+import AdminRoute from "./AdminRoute";
 
 const router = createBrowserRouter([
   {
