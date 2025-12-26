@@ -2,12 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-*{
-  dox-sizing: border-box;
+* {
+  box-sizing: border-box; /* Fixed typo here */
 }
-body{
-  scroll-behavior:smooth;
-  @apply bg-neutral-900 text-neutral-300
-  p-0
-  m-0;
+
+body {
+  scroll-behavior: smooth;
+  @apply bg-neutral-900 text-neutral-300; /* Added semicolon */
+  padding: 0;
+  margin: 0;
 }
