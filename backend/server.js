@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
+const path = require('path');
 
 dotenv.config();
 connectDB();
@@ -30,7 +31,17 @@ app.use(cors({
   credentials: true,  // If using cookies or sessions
 }));
 
-// Routes
+// Serve static files from the 'public' or 'build' folder (adjust path if needed)
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'build'))); // Path to your build folder (React/Vue)
+  
+  // Serve the frontend app's index.html for all other routes
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'build', 'index.html')); // Adjust path to your build folder
+  });
+}
+
+// API Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/movies', require('./routes/movies'));
 
