@@ -1,5 +1,3 @@
-
-
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 
@@ -10,6 +8,8 @@ import SearchPage from "../Pages/SearchPage";
 
 import Login from "../Pages/LoginPage";
 import Register from "../Pages/RegisterPage";
+import AdminController from "../Pages/AdminController"
+import AdminRoute from "./adminRoute";
 
 const router = createBrowserRouter([
   {
@@ -33,11 +33,11 @@ const router = createBrowserRouter([
 
       // ✅ MOVIE ROUTES
       {
-        path: "explore/:type",
+        path: "explore/:explore",
         element: <ExplorePage />,
       },
       {
-        path: "explore/:type/:id",
+        path: ":explore/:id",
         element: <DetailsPage />,
       },
 
@@ -45,6 +45,14 @@ const router = createBrowserRouter([
       {
         path: "search",
         element: <SearchPage />,
+      },
+      {
+        path: "admincontroller",
+        element: (
+    <AdminRoute>
+      <AdminController />
+    </AdminRoute>
+  ),
       },
     ],
   },
