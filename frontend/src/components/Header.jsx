@@ -126,10 +126,8 @@ function Header() {
     bg-[#2c2f33] rounded-lg shadow-lg p-4 text-white
 
     max-sm:fixed
-    max-sm:top-16
-    max-sm:left-1/2
-    max-sm:-translate-x-1/2
-    max-sm:w-[90%]
+    max-sm:top-12
+    max-sm:w-[50%]
     max-sm:max-w-[320px]
     max-sm:rounded-xl
     max-sm:z-50
