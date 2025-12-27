@@ -26,9 +26,9 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // Allow specific methods
-  allowedHeaders: ['Content-Type', 'Authorization'],  // Allow headers for authentication
-  credentials: true,  // If using cookies or sessions
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
+  allowedHeaders: ['Content-Type', 'Authorization'],  
+  credentials: true,  
 }));
 
 // Serve static files from the 'public' or 'build' folder (adjust path if needed)
