@@ -56,11 +56,10 @@ function Header() {
 
         {/* Logo */}
         <Link to="/" className="flex-shrink-0">
-          <img
-            src="https://images.indianexpress.com/2024/01/Movie-Street-feat-2.jpg?w=640"
-            alt="Movie Logo"
-            className="w-[110px]"
-          />
+          <p className="tracking-widest lg:text-[25px] text-[14px] text-red-500 uppercase font-semibold">
+  Movie Street
+</p>
+
         </Link>
 
         {/* Navigation */}
@@ -121,7 +120,21 @@ function Header() {
             </button>
 
             {token && authUser && openMenu && (
-              <div className="absolute right-0 mt-3 w-56 bg-[#2c2f33] rounded-lg shadow-lg p-4 text-white">
+              <div
+  className="
+    absolute right-0 mt-3 w-56
+    bg-[#2c2f33] rounded-lg shadow-lg p-4 text-white
+
+    max-sm:fixed
+    max-sm:top-16
+    max-sm:left-0
+    max-sm:right-0
+    max-sm:w-full
+    max-sm:rounded-none
+    max-sm:z-50
+  "
+>
+
                 <p className="font-semibold">{authUser.name}</p>
                 <p className="text-sm text-gray-400 truncate">
                   {authUser.email}
