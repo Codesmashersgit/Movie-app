@@ -122,15 +122,16 @@ function Header() {
             {token && authUser && openMenu && (
               <div
   className="
-    absolute right-0 mt-1 w-32
+   absolute right-0 mt-3 w-56
     bg-[#2c2f33] rounded-lg shadow-lg p-4 text-white
 
     max-sm:fixed
     max-sm:top-16
-    max-sm:left-0
-    max-sm:right-0
-    max-sm:w-full
-    max-sm:rounded-none
+    max-sm:left-1/2
+    max-sm:-translate-x-1/2
+    max-sm:w-[90%]
+    max-sm:max-w-[320px]
+    max-sm:rounded-xl
     max-sm:z-50
   "
 >
